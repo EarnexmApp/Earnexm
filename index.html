@@ -1,227 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnEXM - Ultimate Gaming Edition</title>
-    <style>
-        :root { --y: #ffcc00; --p: #ff00ff; --bg: #000b21; --b: #0088ff; --dark: #0a0a0a; }
-        body { margin: 0; background: #000b21; background: radial-gradient(circle, #001f5c 0%, #000b21 100%); color: white; font-family: 'Arial Black', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        /* Stats Header */
-        .top-header { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.6); align-items: center; }
-        .balance-box { background: rgba(0,0,0,0.8); border: 2px solid #333; border-radius: 25px; padding: 5px 20px; display: flex; gap: 15px; font-size: 0.9rem; box-shadow: 0 0 15px rgba(255,204,0,0.1); }
+  <meta charset="UTF-8">
+  <title>Earn EXM</title>
+  <link rel="stylesheet" href="style.css">
 
-        /* Game Area */
-        .game-main { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 80px; }
-        
-        /* Side Mini Icons (Like the Screenshot) */
-        .side-menu-left, .side-menu-right { position: absolute; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 50; }
-        .side-menu-left { left: 15px; } .side-menu-right { right: 15px; }
-        
-        .icon-circle { width: 60px; height: 60px; background: var(--y); border: 4px solid #000; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 0 #000; transition: 0.2s; }
-        .icon-circle:active { transform: translateY(4px); box-shadow: 0 0 0 #000; }
-        .icon-circle span { font-size: 0.5rem; color: #000; font-weight: 900; text-align: center; }
-
-        /* Professional Wheel */
-        .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 30px; }
-        canvas { width: 100%; height: 100%; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); transition: transform 4s cubic-bezier(0.1, 0, 0, 1); }
-        .wheel-pin { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--y); z-index: 60; filter: drop-shadow(0 0 10px gold); }
-
-        /* Big Spin Button */
-        .big-spin-btn { background: linear-gradient(to bottom, #ffea00, #ffaa00); color: #000; border: none; padding: 18px 60px; border-radius: 50px; font-size: 1.2rem; font-weight: 900; border-bottom: 6px solid #885500; cursor: pointer; text-transform: uppercase; }
-        .big-spin-btn:disabled { background: #555; border-bottom-color: #222; color: #888; cursor: not-allowed; }
-
-        /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: linear-gradient(to top, #000, transparent); height: 80px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); }
-        .nav-link { display: flex; flex-direction: column; align-items: center; color: #ccc; text-decoration: none; font-size: 0.7rem; cursor: pointer; }
-        .nav-link.active { color: var(--y); }
-
-        /* Popups / Screens */
-        .screen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
-        .hidden { display: none !important; }
-        .card { background: #0a0a0a; border: 2px solid var(--y); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; text-align: center; }
-
-        #toast { visibility: hidden; min-width: 250px; background: var(--y); color: #000; text-align: center; border-radius: 10px; padding: 15px; position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%); z-index: 5000; font-weight: bold; }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-    </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-    <div id="toast">Reward Claimed!</div>
+<h2>💰 رصيدك: <span id="balance">0</span> EXM</h2>
 
-    <div class="top-header">
-        <button style="background:#444; color:white; border:none; border-radius:10px; padding:8px 15px;" onclick="window.close()">EXIT</button>
-        <div class="balance-box">
-            <span>🪙 <span id="e-val">0</span></span>
-            <span>💵 <span id="u-val">0.0000</span></span>
-        </div>
-        <button style="background:#444; color:white; border:none; border-radius:10px; padding:8px 15px;" onclick="goHome()">BACK</button>
-    </div>
+<div class="buttons">
+  <img src="images/earn_task.jpg" onclick="earnTask()">
+  <img src="images/daily_gift.jpg" onclick="dailyGift()">
+  <img src="images/lucky_draw.jpg" onclick="openWheel()">
+  <img src="images/withdraw.jpg" onclick="withdraw()">
+</div>
 
-    <div class="game-main">
-        <div class="side-menu-left">
-            <div class="icon-circle" onclick="v('scr-profile')">👤<span>PROFILE</span></div>
-            <div class="icon-circle" onclick="v('scr-lucky')">🏆<span>LUCKY</span></div>
-        </div>
+<!-- عجلة الحظ -->
+<div id="wheelBox" class="modal">
+  <img src="images/spinwheel.jpg" onclick="spinWheel()">
+  <img src="images/add_exm.jpg" onclick="addMoreEXM()">
+  <img src="images/close.jpg" onclick="closeWheel()">
+</div>
 
-        <div class="wheel-container">
-            <div class="wheel-pin"></div>
-            <canvas id="wheel" width="350" height="350"></canvas>
-        </div>
-
-        <div class="side-menu-right">
-            <div class="icon-circle" onclick="v('scr-withdraw')">🏦<span>WALLET</span></div>
-            <div class="icon-circle" onclick="v('scr-admin')">⚙️<span>ADMIN</span></div>
-        </div>
-
-        <button id="spin-btn" class="big-spin-btn" onclick="handleSpin()">SPIN FOR 10 🪙</button>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-link active" onclick="goHome()">🎡<br>Spin</div>
-        <div class="nav-link" onclick="v('scr-earn')">🚀<br>Earn</div>
-        <div class="nav-link" onclick="v('scr-invite')">👥<br>Invite</div>
-        <div class="nav-link" onclick="v('scr-withdraw')">💼<br>Wallet</div>
-    </div>
-
-    <div id="scr-earn" class="screen-overlay hidden">
-        <div class="card" style="border-color: var(--b);">
-            <h2 style="color:var(--b)">GIMME A TASK</h2>
-            <p>Visit advertiser page for 25s to earn 10 EXM.</p>
-            <div id="timer-ui" class="hidden" style="font-size:3.5rem; color:var(--b); margin:15px;">25s</div>
-            <button id="take-it-btn" class="big-spin-btn" style="background:var(--b); border-bottom-color:#004488; color:white;" onclick="startTask()">TAKE IT</button>
-            <div id="claim-box" class="hidden">
-                <h3 style="color:lime">TASK FINISHED!</h3>
-                <button class="big-spin-btn" style="background:lime; border-bottom-color:green;" onclick="claimTask()">CLAIM 10 EXM</button>
-            </div>
-        </div>
-        <p onclick="goHome()" id="task-close" style="margin-top:20px; cursor:pointer;">Close</p>
-    </div>
-
-    <div id="scr-profile" class="screen-overlay hidden">
-        <div class="card">
-            <h3>USER PROFILE</h3>
-            <p>NAME: <span id="u-name" style="color:var(--y)"></span></p>
-            <p>ID: <span id="u-id" style="color:var(--y)"></span></p>
-            <button class="big-spin-btn" style="padding:10px 30px; font-size:0.8rem;" onclick="copyData()">COPY ID</button>
-        </div>
-        <p onclick="goHome()" style="margin-top:20px;">Back</p>
-    </div>
-
-    <div id="scr-withdraw" class="screen-overlay hidden">
-        <div class="card">
-            <h3>WITHDRAWAL</h3>
-            <input type="text" id="w-address" placeholder="USDT TRC20" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:white; border-radius:10px; margin-bottom:10px;">
-            <button class="big-spin-btn" style="width:100%;" onclick="processMail('Withdrawal')">SUBMIT</button>
-        </div>
-        <p onclick="goHome()">Back</p>
-    </div>
-
-    <div id="scr-admin" class="screen-overlay hidden">
-        <div class="card">
-            <h3>ADMIN PANEL</h3>
-            <input type="password" id="adm-pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="big-spin-btn" onclick="adminAuth()">LOGIN</button>
-            <div id="adm-tools" class="hidden">
-                <input type="text" id="target-uid" placeholder="User ID" style="width:100%; margin-top:10px;">
-                <button onclick="doRecycle()" style="background:red; color:white; width:100%; margin-top:10px;">RECYCLE</button>
-            </div>
-        </div>
-        <p onclick="goHome()">Back</p>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        const config = { apiKey: "AIzaSyD3xCKkyQT-6FOURJBjBaTNKOFItL2M87Q", authDomain: "earnexmapp-8a0a2.firebaseapp.com", projectId: "earnexmapp-8a0a2", databaseURL: "https://earnexmapp-8a0a2-default-rtdb.firebaseio.com", appId: "1:325148626791:web:0448e65046bb38e365e9c2" };
-        const app = initializeApp(config); const db = getDatabase(app);
-
-        let finalId = localStorage.getItem('exm_id_final') || Math.floor(10000000 + Math.random() * 89999999).toString();
-        let finalName = localStorage.getItem('exm_name_final') || Math.random().toString(36).substring(2, 10).toUpperCase();
-        localStorage.setItem('exm_id_final', finalId); localStorage.setItem('exm_name_final', finalName);
-        document.getElementById('u-id').innerText = finalId; document.getElementById('u-name').innerText = finalName;
-
-        const userRef = ref(db, 'users/' + finalId);
-        const segments = ["10", "20", "50", "LOSS", "15", "5", "100", "LOSS"];
-        let isSpinning = false;
-
-        const canvas = document.getElementById('wheel'); const ctx = canvas.getContext('2d');
-        function drawWheel() {
-            const arc = (Math.PI*2)/8;
-            for(let i=0; i<8; i++) {
-                ctx.fillStyle = i%2==0 ? "#ffcc00" : "#ff00ff";
-                ctx.beginPath(); ctx.arc(175, 175, 165, i*arc, (i+1)*arc); ctx.lineTo(175, 175); ctx.fill();
-                ctx.save(); ctx.fillStyle = "black"; ctx.font = "bold 16px Arial"; ctx.translate(175, 175); ctx.rotate(i*arc + arc/2); ctx.fillText(segments[i], 110, 5); ctx.restore();
-            }
-        }
-        drawWheel();
-
-        window.v = (id) => { document.querySelectorAll('.screen-overlay').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); };
-        window.goHome = () => { document.querySelectorAll('.screen-overlay').forEach(s => s.classList.add('hidden')); };
-        window.showToast = (m) => { const t = document.getElementById('toast'); t.innerText=m; t.className="show"; setTimeout(()=>t.className="", 3000); };
-
-        window.handleSpin = async () => {
-            if(isSpinning) return;
-            const snap = await get(userRef);
-            let bal = snap.val()?.exm || 500;
-            if(bal < 10) { showToast("Need 10 🪙 to spin!"); return; }
-
-            isSpinning = true;
-            document.getElementById('spin-btn').disabled = true;
-            update(userRef, {exm: bal - 10});
-
-            const rot = 3600 + Math.floor(Math.random()*360);
-            canvas.style.transform = `rotate(${rot}deg)`;
-
-            setTimeout(() => {
-                isSpinning = false;
-                document.getElementById('spin-btn').disabled = false;
-                update(userRef, {exm: parseInt(document.getElementById('e-val').innerText) + 15});
-                showToast("Jackpot! Reward Added.");
-            }, 4000);
-        };
-
-        window.startTask = () => {
-            const links = ["https://otieu.com/4/10493012", "https://www.effectivegatecpm.com/njze4eg1xg?key=159eb9bfcd4ae292e143bc346e6aa518"];
-            window.open(links[Math.floor(Math.random()*links.length)], "_blank");
-            
-            document.getElementById('take-it-btn').classList.add('hidden');
-            document.getElementById('task-close').classList.add('hidden');
-            const timerUI = document.getElementById('timer-ui');
-            timerUI.classList.remove('hidden');
-            
-            let time = 25;
-            const clock = setInterval(() => {
-                time--; timerUI.innerText = time + "s";
-                if(time <= 0) {
-                    clearInterval(clock);
-                    timerUI.classList.add('hidden');
-                    document.getElementById('claim-box').classList.remove('hidden');
-                }
-            }, 1000);
-        };
-
-        window.claimTask = async () => {
-            const snap = await get(userRef);
-            update(userRef, {exm: (snap.val()?.exm || 0) + 10});
-            showToast("💰 +10 EXM Added!");
-            location.reload();
-        };
-
-        window.adminAuth = () => { if(document.getElementById('adm-pass').value === "InisTa") document.getElementById('adm-tools').classList.remove('hidden'); };
-
-        window.copyData = () => { navigator.clipboard.writeText(finalId); showToast("ID Copied!"); };
-
-        onValue(userRef, (s) => {
-            const d = s.val() || {exm: 500};
-            document.getElementById('e-val').innerText = d.exm;
-            document.getElementById('u-val').innerText = (d.exm * 0.0005).toFixed(4);
-        });
-    </script>
+<script src="script.js"></script>
 </body>
 </html>
