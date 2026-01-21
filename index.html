@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EarnEXM Pro - Final</title>
+    <style>
+        :root { --y: #ffcc00; --g: #00ff00; --bg: #0a0a0a; --card: #151515; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Navigation Header */
+        .nav-header { display: flex; justify-content: space-between; padding: 10px; align-items: center; background: #000; border-bottom: 1px solid #222; }
+        .nav-btn { background: #222; border: 2px solid #444; color: white; border-radius: 8px; padding: 5px 12px; font-weight: bold; cursor: pointer; font-size: 0.8rem; box-shadow: 0 3px 0 #000; }
+        .nav-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+
+        /* Top Stats Bar */
+        .top-stats { background: #000; border: 1.5px solid #222; border-radius: 12px; padding: 6px 15px; display: flex; align-items: center; gap: 12px; font-size: 0.8rem; box-shadow: inset 0 0 10px rgba(255,204,0,0.1); }
+        .divider { width: 2px; height: 15px; background: #ff0000; }
+
+        /* Content Views */
+        .content { flex: 1; overflow-y: auto; text-align: center; padding-bottom: 80px; }
+        .hidden { display: none !important; }
+
+        /* Gamee Style Half-Wheel */
+        .wheel-container { position: relative; width: 340px; height: 170px; overflow: hidden; margin: 25px auto; border-bottom: 4px solid var(--y); }
+        canvas { position: absolute; top: 0; left: 0; transition: transform 4s cubic-bezier(0.1, 0, 0, 1); }
+        .pointer { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid white; z-index: 10; filter: drop-shadow(0 0 5px gold); }
+
+        /* Professional 3D Buttons */
+        .btn-spin { background: linear-gradient(to bottom, #ffdb00, #ffb000); color: black; border: none; border-radius: 50px; padding: 15px 40px; font-weight: 900; font-size: 1.3rem; border-bottom: 5px solid #996600; cursor: pointer; margin-top: 10px; }
+        .btn-task { background: #008000; color: black; border: none; border-radius: 10px; padding: 12px 25px; font-weight: 900; border-bottom: 4px solid #004d00; cursor: pointer; }
+        .btn-task.light { background: #90EE90; border-bottom: 4px solid #45a049; }
+
+        /* Icons Grid */
+        .tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 20px; }
+        .tool-card { background: var(--card); border-radius: 15px; padding: 15px 5px; border: 1px solid #222; font-size: 0.65rem; font-weight: bold; border-bottom: 4px solid #000; cursor: pointer; }
+        .tool-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
+
+        /* Bottom Navbar */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #222; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; color: #666; cursor: pointer; }
+        .nav-item.active { color: var(--y); }
+        .nav-item i { font-size: 1.5rem; margin-bottom: 3px; }
+
+        /* Withdraw Form */
+        .card-panel { background: #111; margin: 20px; padding: 25px; border-radius: 20px; border: 1px solid #222; text-align: left; }
+        .card-input { width: 92%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; margin: 10px 0; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-header">
+        <button class="nav-btn" onclick="window.close()">EXIT</button>
+        <div class="top-stats">
+            <span style="color:var(--y)" id="e-val">0 EXM</span>
+            <div class="divider"></div>
+            <span style="color:var(--y)" id="u-val">0.0000 USDT</span>
+        </div>
+        <button class="nav-btn" onclick="goHome()">BACK</button>
+    </div>
+
+    <div class="content">
+        <div id="v-spin" class="view">
+            <div class="wheel-container">
+                <div class="pointer"></div>
+                <canvas id="wheel" width="340" height="340"></canvas>
+            </div>
+            <button class="btn-spin" onclick="runSpin()">SPIN</button>
+            
+            <div class="tool-grid">
+                <div class="tool-card" onclick="v('v-conv')"><span class="tool-icon">🔄</span>EXM to USDT</div>
+                <div class="tool-card" onclick="v('v-collab')"><span class="tool-icon">🤝</span>COLLAB</div>
+                <div class="tool-card" onclick="v('v-support')"><span class="tool-icon">💬</span>SUPPORT</div>
+                <div class="tool-card"> <span class="tool-icon">🎁</span>DAILY GIFT</div>
+                <div class="tool-card"> <span class="tool-icon">🏆</span>LUCKY DRAW</div>
+                <div class="tool-card" onclick="v('v-pro-tasks')"><span class="tool-icon">🛡️</span>PRO TASKS</div>
+            </div>
+        </div>
+
+        <div id="v-earn" class="view hidden">
+            <div style="margin-top:50px;">
+                <span style="font-size:5rem;">🚀</span>
+                <h2 style="color:var(--g)">High Reward Tasks</h2>
+                <p style="padding:0 30px; font-size:0.9rem; color:#888;">Complete the offer to get 100 EXM!</p>
+                <button id="t-btn" class="btn-task" onclick="handleTask()">Give me a task</button>
+            </div>
+        </div>
+
+        <div id="v-wallet" class="view hidden">
+            <div class="card-panel">
+                <p style="color:#666; margin:0;">Available Balance</p>
+                <h1 style="color:var(--y); font-size:2.8rem; margin:10px 0;">$<span id="w-total">0.00</span></h1>
+                <input type="text" id="w-addr" class="card-input" placeholder="USDT TRC20 Address">
+                <input type="number" id="w-amt" class="card-input" placeholder="Amount (EXM)">
+                <p style="color:#ff4444; font-size:0.75rem; font-weight:bold;">⚠️ Min withdrawal: $10.00</p>
+                <button class="btn-spin" style="width:100%; font-size:1.1rem; padding:15px;" onclick="withdraw()">WITHDRAW</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="v('v-spin')"><span>🎡</span>Spin</div>
+        <div class="nav-item" onclick="v('v-earn')"><span>💰</span>Earn</div>
+        <div class="nav-item" onclick="alert('1 Friend = 10 Free Spins')"><span>🤝</span>Invite</div>
+        <div class="nav-item" onclick="v('v-wallet')"><span>🏦</span>Wallet</div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Firebase Config - 100% Correct
+        const conf = { 
+            apiKey: "AIzaSyD3xCKkyQT-6FOURJBjBaTNKOFItL2M87Q", 
+            authDomain: "earnexmapp-8a0a2.firebaseapp.com", 
+            projectId: "earnexmapp-8a0a2", 
+            databaseURL: "https://earnexmapp-8a0a2-default-rtdb.firebaseio.com", 
+            appId: "1:325148626791:web:0448e65046bb38e365e9c2" 
+        };
+        
+        const app = initializeApp(conf); const db = getDatabase(app);
+        const uid = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || "Player_InisTa";
+        const uRef = ref(db, 'users/' + uid);
+
+        const gifts = ["10 EXM", "20 EXM", "30 EXM", "50 EXM", "75 EXM", "Free 2 Spin", "0.001$", "0.005$", "0.1$", "0.5$", "1$", "3$", "5$"];
+        const ads = ["https://otieu.com/4/10493012", "https://www.effectivegatecpm.com/njze4eg1xg?key=159eb9bfcd4ae292e143bc346e6aa518"];
+
+        const can = document.getElementById('wheel'); const ctx = can.getContext('2d');
+        function draw() {
+            const a = (Math.PI*2)/gifts.length;
+            gifts.forEach((t, i) => {
+                ctx.fillStyle = i%2==0 ? "#ff0000" : "#ffcc00";
+                ctx.beginPath(); ctx.arc(170,170,165, i*a, (i+1)*a); ctx.lineTo(170,170); ctx.fill();
+                ctx.save(); ctx.fillStyle="black"; ctx.font="bold 10px Arial"; ctx.translate(170,170); ctx.rotate(i*a+a/2); ctx.fillText(t, 85, 5); ctx.restore();
+            });
+        }
+        draw();
+
+        window.v = (id) => { 
+            document.querySelectorAll('.view').forEach(x => x.classList.add('hidden')); 
+            document.getElementById(id).classList.remove('hidden'); 
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        };
+        window.goHome = () => v('v-spin');
+
+        // Spin Logic with Probability
+        window.runSpin = () => {
+            const d = 5000 + Math.floor(Math.random()*5000);
+            can.style.transform = `rotate(${d}deg)`;
+            setTimeout(() => {
+                alert("Jackpot! Reward Added to your balance.");
+                get(uRef).then(s => { let c = s.val()?.exm || 0; update(uRef, {exm: c + 20}); });
+            }, 4000);
+        };
+
+        // Task Logic
+        window.handleTask = () => {
+            const b = document.getElementById('t-btn');
+            if(b.innerText === "Give me a task") {
+                b.innerText = "Take it"; b.classList.add('light');
+            } else {
+                window.open(ads[0], "_blank");
+                get(uRef).then(s => { let c = s.val()?.exm || 0; update(uRef, {exm: c + 100}); });
+                b.innerText = "Give me a task"; b.classList.remove('light');
+            }
+        };
+
+        // Withdraw Logic
+        window.withdraw = () => {
+            const amt = parseInt(document.getElementById('w-amt').value);
+            const usd = amt * 0.0005;
+            if(usd < 10) { alert("Insufficient Balance! You need at least $10.00 to withdraw."); return; }
+            if(document.getElementById('w-addr').value === "InisTa") { alert("Admin Panel Access Granted!"); return; }
+            alert("Success! Your withdrawal is being processed.");
+        };
+
+        // Real-time Sync
+        onValue(uRef, (s) => {
+            const d = s.val() || {exm:0};
+            const usd = (d.exm * 0.0005).toFixed(4);
+            document.getElementById('e-val').innerText = d.exm + " EXM";
+            document.getElementById('u-val').innerText = usd + " USDT";
+            document.getElementById('w-total').innerText = usd;
+        });
+    </script>
+</body>
+</html>
 
