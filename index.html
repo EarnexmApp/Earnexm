@@ -3,117 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnEXM Pro - InisTa Edition</title>
+    <title>EarnEXM Mega Pro - InisTa Edition</title>
     <style>
-        :root { --y: #ffcc00; --g: #28a745; --p: #ff4d94; --bg: #000c24; --card: #1e2329; }
-        body { margin: 0; background: radial-gradient(circle, #002d7a, #000c24); color: white; font-family: 'Arial Black', sans-serif; text-align: center; height: 100vh; overflow: hidden; }
+        :root { --yellow: #ffcc00; --green: #28a745; --pink: #ff4d94; --dark: #0b0e11; --blue-soft: #1e2329; }
+        body { margin: 0; background: radial-gradient(circle, #002d7a, #000c24); color: white; font-family: 'Arial Rounded MT Bold', sans-serif; overflow-x: hidden; text-align: center; height: 100vh; }
+        
+        /* Top Navigation & Balance */
+        .top-bar { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.4); }
+        .btn-top { background: #333; border: none; color: white; padding: 5px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        .balance-card { display: flex; width: 90%; margin: 10px auto; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); height: 45px; font-weight: 900; font-size: 1.1rem; }
+        .exm-box { background: var(--yellow); color: #000; flex: 1; line-height: 45px; }
+        .usdt-box { background: var(--green); color: #000; flex: 1; line-height: 45px; }
 
-        /* Balance Bar */
-        .balance-header { display: flex; width: 95%; margin: 10px auto; border-radius: 12px; overflow: hidden; height: 50px; font-weight: 900; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .exm-part { background: var(--y); color: black; flex: 1; line-height: 50px; font-size: 1.1rem; }
-        .usdt-part { background: var(--g); color: black; flex: 1; line-height: 50px; font-size: 1.1rem; }
-
-        /* 3D Buttons Style - هادو هوما الأزرار اللي طلبتهم */
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
-        .btn-3d { 
-            background: var(--card); color: white; padding: 20px 10px; border-radius: 20px; 
-            border: none; border-bottom: 6px solid #000; font-size: 0.9rem; font-weight: bold; 
-            cursor: pointer; transition: 0.1s; display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .btn-3d:active { transform: translateY(4px); border-bottom: 2px solid #000; }
-        .btn-withdraw { grid-column: span 2; background: #222; border-bottom: 6px solid #111; color: var(--y); }
+        /* Main Menu Grid */
+        .grid-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+        .menu-item { background: var(--blue-soft); padding: 20px; border-radius: 15px; border-bottom: 5px solid #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .menu-item:active { transform: translateY(4px); border-bottom: 0; }
 
         /* Views */
-        .view { height: 65vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .view { padding: 20px; height: 70vh; overflow-y: auto; }
         .hidden { display: none !important; }
 
-        /* Wheel Area */
-        .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto; border: 10px solid var(--y); border-radius: 50%; box-shadow: 0 0 30px rgba(255, 204, 0, 0.3); }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 35px; height: 35px; background: white; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
-        
-        /* Task Button */
-        .btn-task-main { 
-            background: var(--y); color: var(--g); border: none; border-radius: 15px; 
-            padding: 20px; width: 85%; font-size: 1.6rem; font-weight: 900; 
-            border-bottom: 8px solid #b38f00; cursor: pointer;
-        }
-        .btn-task-main:active { transform: translateY(4px); border-bottom: 2px solid #b38f00; }
+        /* Wheel Design */
+        .wheel-container { position: relative; width: 320px; height: 320px; margin: 0 auto; }
+        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: white; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 20; }
+        canvas { border: 10px solid var(--yellow); border-radius: 50%; background: white; }
 
-        .timer-emoji { font-size: 5rem; margin: 15px; display: inline-block; transition: 1s linear; }
+        /* Task & Buttons */
+        .btn-action { background: var(--yellow); color: var(--green); border: none; border-radius: 12px; padding: 20px; width: 85%; font-size: 1.5rem; font-weight: 900; box-shadow: 0 6px 0 #b38f00; margin-top: 20px; cursor: pointer; }
+        .timer-icon { font-size: 5rem; margin: 20px 0; display: inline-block; }
+        
+        /* Daily Gift Table */
+        .gift-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
+        .day-box { background: #333; padding: 5px; border-radius: 5px; font-size: 0.7rem; opacity: 0.6; }
+        .day-active { background: var(--yellow); color: black; opacity: 1; }
+
+        /* Claim Button Popup */
+        #claim-popup { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--green); color: white; padding: 15px 40px; border-radius: 50px; font-weight: 900; box-shadow: 0 0 20px var(--green); cursor: pointer; z-index: 100; }
     </style>
 </head>
 <body>
 
-    <div style="display: flex; justify-content: space-between; padding: 15px;">
-        <button onclick="goHome()" style="background:rgba(255,255,255,0.1); border:none; color:white; border-radius:10px; padding:8px 20px; font-weight:bold;">◀ BACK</button>
-        <button onclick="window.close()" style="background:rgba(255,0,0,0.2); border:none; color:white; border-radius:10px; padding:8px 20px; font-weight:bold;">EXIT ✖</button>
+    <div class="top-bar">
+        <button class="btn-top" onclick="goHome()">Back</button>
+        <span style="font-weight: bold; color: var(--yellow);">InisTa App</span>
+        <button class="btn-top" onclick="window.close()">Exit</button>
     </div>
 
-    <div class="balance-header">
-        <div class="exm-part">EXM: <span id="e-val">0</span></div>
-        <div class="usdt-part">USDT: <span id="u-val">0.0000</span></div>
+    <div class="balance-card">
+        <div class="exm-box">EXM: <span id="val-exm">0</span></div>
+        <div class="usdt-box">USDT: <span id="val-usdt">0.00</span></div>
     </div>
 
-    <div id="h-view" class="menu-grid">
-        <div class="btn-3d" onclick="v('s-view')"><span style="font-size:2rem">🎡</span>SPIN & WIN</div>
-        <div class="btn-3d" onclick="v('e-view')"><span style="font-size:2rem">💰</span>EARN TASKS</div>
-        <div class="btn-3d" onclick="v('l-view')"><span style="font-size:2rem">🏆</span>LUCKY DRAW</div>
-        <div class="btn-3d" onclick="v('a-view')"><span style="font-size:2rem">🤝</span>AFFILIATE</div>
-        <div class="btn-3d btn-withdraw" onclick="v('w-view')"><span style="font-size:1.5rem">🏦</span>WITHDRAW & ADMIN</div>
+    <div id="view-home" class="grid-menu">
+        <div class="menu-item" onclick="openView('view-spin')">🎡 Spin & Win</div>
+        <div class="menu-item" onclick="openView('view-earn')">💰 Earn Tasks</div>
+        <div class="menu-item" onclick="openView('view-lucky')">🏆 Lucky Draw</div>
+        <div class="menu-item" onclick="openView('view-affiliate')">🤝 Affiliate</div>
+        <div class="menu-item" onclick="openView('view-daily')">🎁 Daily Gift</div>
+        <div class="menu-item" onclick="openView('view-withdraw')" style="grid-column: span 2;">🏦 Withdraw</div>
     </div>
 
-    <div id="s-view" class="view hidden">
-        <div class="wheel-container"><div class="pointer"></div><canvas id="canvas" width="280" height="280"></canvas></div>
-        <button class="btn-task-main" style="color:black; margin-top:30px;" onclick="spin()">SPIN FOR AD</button>
+    <div id="view-spin" class="view hidden">
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <canvas id="wheel-canvas" width="300" height="300"></canvas>
+        </div>
+        <button class="btn-action" style="color: black;" onclick="startSpin()">SPIN</button>
     </div>
 
-    <div id="e-view" class="view hidden">
-        <p style="padding:0 25px; font-weight:bold; color: var(--y);">Stay 1 min on ad page! Don't cheat! ⚠️</p>
-        <div class="timer-emoji" id="icon">⏲️</div>
-        <h1 id="sec" style="font-size:3rem; margin:0;">60s</h1>
-        <button id="t-btn" class="btn-task-main" onclick="task()">Give me a task</button>
+    <div id="view-earn" class="view hidden">
+        <p style="font-weight: bold;">Stay 1 minute on advertiser page! Don't Cheat!</p>
+        <div class="timer-icon" id="emoji-timer">⏲️</div>
+        <div id="timer-text" style="font-size: 2.5rem; color: var(--yellow);">60s</div>
+        <button id="task-btn" class="btn-action" onclick="handleTask()">Give me a task</button>
     </div>
 
-    <div id="w-view" class="view hidden">
-        <div style="background:var(--card); padding:30px; border-radius:25px; width:80%;">
-            <input type="text" id="w-in" placeholder="Enter Wallet or Admin Code" style="width:100%; padding:15px; border-radius:10px; border:none; margin-bottom:20px; font-size:1rem;">
-            <button class="btn-task-main" style="color:black; width:100%;" onclick="adminCheck()">SUBMIT</button>
+    <div id="view-lucky" class="view hidden">
+        <div style="background: var(--blue-soft); padding: 20px; border-radius: 15px;">
+            <h3>Weekly Lucky Draw</h3>
+            <p>1st: $100 | 2nd: $50 | 3rd: $20</p>
+            <p>Ends every Friday 00:00 UTC</p>
+            <input type="number" id="lucky-in" placeholder="EXM to invest" style="width: 80%; padding: 10px; border-radius: 8px;">
+            <button class="btn-action" onclick="alert('Participated!')">Enter Now</button>
         </div>
     </div>
+
+    <div id="view-withdraw" class="view hidden">
+        <div style="background: var(--blue-soft); padding: 20px; border-radius: 15px;">
+            <input type="text" id="wallet-input" placeholder="USDT TRC20 Address" style="width: 90%; padding: 10px; margin-bottom: 15px;">
+            <button class="btn-action" onclick="checkWithdraw()">Withdraw</button>
+        </div>
+    </div>
+
+    <div id="claim-popup" class="hidden" onclick="claimReward()">CLAIM 50 EXM</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const conf = { 
-            apiKey: "AIzaSyD3xCKkyQT-6FOURJBjBaTNKOFItL2M87Q", 
-            authDomain: "earnexmapp-8a0a2.firebaseapp.com", 
-            projectId: "earnexmapp-8a0a2", 
-            databaseURL: "https://earnexmapp-8a0a2-default-rtdb.firebaseio.com", 
-            appId: "1:325148626791:web:0448e65046bb38e365e9c2" 
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3xCKkyQT-6FOURJBjBaTNKOFItL2M87Q",
+            authDomain: "earnexmapp-8a0a2.firebaseapp.com",
+            projectId: "earnexmapp-8a0a2",
+            storageBucket: "earnexmapp-8a0a2.firebasestorage.app",
+            messagingSenderId: "325148626791",
+            appId: "1:325148626791:web:0448e65046bb38e365e9c2"
         };
 
-        const app = initializeApp(conf); const db = getDatabase(app);
-        const uid = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || "Player_InisTa";
-        const uRef = ref(db, 'users/' + uid);
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || "Dev_InisTa";
+        const userRef = ref(db, 'users/' + userId);
 
-        const prizes = ["50 EXM", "0.01$", "Lose", "2$", "5$", "1000 EXM", "1 Spin", "75 EXM", "0.2$", "Lose"];
-        const ads = ["https://otieu.com/4/10493012", "https://www.effectivegatecpm.com/njze4eg1xg?key=159eb9bfcd4ae292e143bc346e6aa518"];
+        const links = ["https://otieu.com/4/10493012", "https://www.effectivegatecpm.com/njze4eg1xg?key=159eb9bfcd4ae292e143bc346e6aa518"];
+        const prizes = ["50 EXM", "75 EXM", "100 EXM", "0.01$", "Lose", "2$", "5$", "1000 EXM", "1 Spin", "0.1$"];
 
-        window.v = (id) => { document.querySelectorAll('.view, #h-view').forEach(x => x.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); };
-        window.goHome = () => { document.querySelectorAll('.view').forEach(x => x.classList.add('hidden')); document.getElementById('h-view').classList.remove('hidden'); };
-
-        const can = document.getElementById('canvas'); const ctx = can.getContext('2d');
-        function draw() { const a = (Math.PI*2)/prizes.length; prizes.forEach((txt, i) => { ctx.fillStyle = i%2==0 ? "#ff4d94" : "#ffcc00"; ctx.beginPath(); ctx.arc(140,140,135, i*a, (i+1)*a); ctx.lineTo(140,140); ctx.fill(); ctx.save(); ctx.fillStyle="black"; ctx.font="bold 12px Arial"; ctx.translate(140,140); ctx.rotate(i*a+a/2); ctx.fillText(txt, 65, 5); ctx.restore(); }); }
-        draw();
-
-        window.task = () => {
-            const b = document.getElementById('t-btn');
-            if(b.innerText === "Give me a task") { b.innerText = "Take it"; b.onclick = () => { window.open(ads[Math.floor(Math.random()*ads.length)], "_blank"); let s = 60; let t = setInterval(() => { s--; document.getElementById('sec').innerText = s+"s"; document.getElementById('icon').style.transform = `rotate(${360 - s*6}deg)`; if(s<=0) { clearInterval(t); alert("Success! 50 EXM Added."); get(uRef).then(snap => { let cur = snap.val()?.exm || 0; update(uRef, {exm: cur + 50}); goHome(); }); } }, 1000); }; }
+        // Navigation
+        window.openView = (id) => {
+            document.querySelectorAll('.view, .grid-menu').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        };
+        window.goHome = () => {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-home').classList.remove('hidden');
         };
 
-        window.adminCheck = () => { if(document.getElementById('w-in').value === "InisTa") alert("Welcome Admin InisTa! Everything is Ready."); else alert("Withdrawal request sent!"); };
-        onValue(uRef, (s) => { const d = s.val() || {exm: 0}; document.getElementById('e-val').innerText = d.exm; document.getElementById('u-val').innerText = (d.exm * 0.00005).toFixed(4); });
+        // Draw Wheel (Pink & Yellow)
+        const canvas = document.getElementById('wheel-canvas');
+        const ctx = canvas.getContext('2d');
+        function drawWheel() {
+            const arc = (Math.PI * 2) / prizes.length;
+            prizes.forEach((p, i) => {
+                ctx.fillStyle = i % 2 === 0 ? "#ff4d94" : "#ffcc00";
+                ctx.beginPath(); ctx.arc(150, 150, 140, i*arc, (i+1)*arc); ctx.lineTo(150, 150); ctx.fill();
+                ctx.save(); ctx.fillStyle = "black"; ctx.font = "bold 10px Arial"; ctx.translate(150, 150);
+                ctx.rotate(i*arc + arc/2); ctx.fillText(p, 60, 5); ctx.restore();
+            });
+        }
+        drawWheel();
+
+        // Earn Task Logic
+        window.handleTask = function() {
+            const btn = document.getElementById('task-btn');
+            if(btn.innerText === "Give me a task") {
+                btn.innerText = "Take it";
+                btn.onclick = () => {
+                    window.open(links[Math.floor(Math.random()*links.length)], '_blank');
+                    let s = 60;
+                    let t = setInterval(() => {
+                        s--;
+                        document.getElementById('timer-text').innerText = s + "s";
+                        document.getElementById('emoji-timer').style.transform = `rotate(${360 - s*6}deg)`;
+                        if(s <= 0) {
+                            clearInterval(t);
+                            document.getElementById('claim-popup').classList.remove('hidden');
+                        }
+                    }, 1000);
+                };
+            }
+        };
+
+        // Admin Unlock
+        window.checkWithdraw = function() {
+            const val = document.getElementById('wallet-input').value;
+            if(val === "InisTa") {
+                alert("ADMIN PANEL: Users Online: 1 | Total USDT: $500.00");
+            } else {
+                alert("Withdrawal request sent to Admin.");
+            }
+        };
+
+        // Database Sync
+        onValue(userRef, (s) => {
+            const d = s.val() || { exm: 0 };
+            document.getElementById('val-exm').innerText = d.exm;
+            document.getElementById('val-usdt').innerText = (d.exm * 0.00005).toFixed(4);
+        });
+
+        window.claimReward = () => {
+            get(userRef).then(s => {
+                let cur = s.val()?.exm || 0;
+                update(userRef, { exm: cur + 50 });
+                document.getElementById('claim-popup').classList.add('hidden');
+                alert("50 EXM added!");
+                goHome();
+            });
+        };
     </script>
 </body>
 </html>
